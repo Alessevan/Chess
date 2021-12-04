@@ -6,6 +6,8 @@ import fr.bakaaless.chessserver.mutual.Pieces;
 import fr.bakaaless.chessserver.mutual.packets.PacketInPieceMove;
 import fr.bakaaless.chessserver.mutual.packets.PacketInSelectPiece;
 import fr.bakaaless.chessserver.mutual.packets.PacketOutGameStop;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -29,6 +31,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontSmoothingType;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.util.Random;
 import java.util.Timer;
@@ -44,6 +47,7 @@ public class UserInterface extends Application {
     }
 
     private Scene scene;
+    private Stage primaryStage;
     public Runnable changeScreen;
 
     private GraphicsContext context;
@@ -63,6 +67,7 @@ public class UserInterface extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Chess.userInterface = this;
+        this.primaryStage = primaryStage;
 
         Chess.getLogger().info("Loading assets...");
         AssetLoader.loadAssets();
@@ -216,10 +221,21 @@ public class UserInterface extends Application {
         pane.setOnKeyPressed(this::onKeyPressed);
         pane.setOnMouseClicked(this::onMouseClicked);
 
-        this.render();
         this.updater = true;
-        this.timer = new Timer("Rendering Updater");
-        this.timer.schedule(new UpdateRender(), 0L, 100L);
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(100), event -> {
+            if (game.isStopped()) {
+                try {
+                    stop();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            this.render();
+        }));
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
+
+        this.primaryStage.setOnCloseRequest(event -> timeline.stop());
     }
 
     public void onKeyPressed(final KeyEvent event) {
@@ -248,10 +264,9 @@ public class UserInterface extends Application {
 
     public void render() {
         if (game.isStopped()) {
-        if (this.updater) {
-            this.timer.cancel();
-            this.updater = false;
-        }
+            if (this.updater) {
+                this.updater = false;
+            }
 
         this.context.setFill(Color.rgb(100, 100, 100, 0.15));
         this.context.fillRect(0, this.height * 0.25, this.width, this.height * 0.5);
@@ -284,10 +299,10 @@ public class UserInterface extends Application {
         this.context.setFont(this.endReasonFont);
         switch (PacketOutGameStop.PacketOutGameStopReason.values()[game.getEndReason()]) {
             case MAT -> {
-                this.context.fillText("The king is in chess and there is no longer move allowed", this.width * 0.5, this.height * 0.66);
+                this.context.fillText("The king is in check and there is no longer move allowed", this.width * 0.5, this.height * 0.66);
             }
             case PAT -> {
-                this.context.fillText("The king isn't in chess and there is no longer move allowed", this.width * 0.5, this.height * 0.66);
+                this.context.fillText("The king isn't in check and there is no longer move allowed", this.width * 0.5, this.height * 0.66);
             }
             case TIMES_UP -> {
                 this.context.fillText("The allowed time is up", this.width * 0.5, this.height * 0.66);
