@@ -81,24 +81,24 @@ public abstract class ChessServer {
         getLogger().info("Filling grid...");
         for (int index = 0; index < 8; index++) {
             Arrays.fill(this.field[index], 0);
-            this.field[index][1] = Pieces.PAWN.value() << 1 | Pieces.BLACK.value();
-            this.field[index][6] = Pieces.PAWN.value() << 1 | Pieces.WHITE.value();
+            this.field[index][1] = (Pieces.PAWN.value() << 2) | Pieces.BLACK.value();
+            this.field[index][6] = (Pieces.PAWN.value() << 2) | Pieces.WHITE.value();
         }
 
-        this.field[0][0] = this.field[7][0] = Pieces.ROOK.value() << 1 | Pieces.BLACK.value();
-        this.field[0][7] = this.field[7][7] = Pieces.ROOK.value() << 1 | Pieces.WHITE.value();
+        this.field[0][0] = this.field[7][0] = (Pieces.ROOK.value() << 2) | Pieces.BLACK.value();
+        this.field[0][7] = this.field[7][7] = (Pieces.ROOK.value() << 2) | Pieces.WHITE.value();
 
-        this.field[1][0] = this.field[6][0] = Pieces.KNIGHT.value() << 1 | Pieces.BLACK.value();
-        this.field[1][7] = this.field[6][7] = Pieces.KNIGHT.value() << 1 | Pieces.WHITE.value();
+        this.field[1][0] = this.field[6][0] = (Pieces.KNIGHT.value() << 2) | Pieces.BLACK.value();
+        this.field[1][7] = this.field[6][7] = (Pieces.KNIGHT.value() << 2) | Pieces.WHITE.value();
 
-        this.field[2][0] = this.field[5][0] = Pieces.BISHOP.value() << 1 | Pieces.BLACK.value();
-        this.field[2][7] = this.field[5][7] = Pieces.BISHOP.value() << 1 | Pieces.WHITE.value();
+        this.field[2][0] = this.field[5][0] = (Pieces.BISHOP.value() << 2) | Pieces.BLACK.value();
+        this.field[2][7] = this.field[5][7] = (Pieces.BISHOP.value() << 2) | Pieces.WHITE.value();
 
-        this.field[3][0] = Pieces.QUEEN.value() << 1 | Pieces.BLACK.value();
-        this.field[4][0] = Pieces.KING.value() << 1 | Pieces.BLACK.value();
+        this.field[3][0] = (Pieces.QUEEN.value() << 2) | Pieces.BLACK.value();
+        this.field[4][0] = (Pieces.KING.value() << 2) | Pieces.BLACK.value();
 
-        this.field[3][7] = Pieces.QUEEN.value() << 1 | Pieces.WHITE.value();
-        this.field[4][7] = Pieces.KING.value() << 1 | Pieces.WHITE.value();
+        this.field[3][7] = (Pieces.QUEEN.value() << 2) | Pieces.WHITE.value();
+        this.field[4][7] = (Pieces.KING.value() << 2) | Pieces.WHITE.value();
 
         this.timeUpdaterTimer = new Timer();
         this.timeUpdater = new TimeUpdater(this);
@@ -294,10 +294,10 @@ public abstract class ChessServer {
                 nextField[replacedPiece[0][0]][replacedPiece[0][1]] = Pieces.NONE.value();
             }
         }
-        return this.hasChess(color, nextField);
+        return this.verifyCheck(color, nextField);
     }
 
-    public boolean hasChess(final int color, final int[][] field) {
+    public boolean verifyCheck(final int color, final int[][] field) {
         for (int x = 0; x < field.length; x++) {
             for (int y = 0; y < field[x].length; y++) {
                 if (field[x][y] == 0)

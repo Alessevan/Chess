@@ -33,12 +33,12 @@ public enum Pieces {
     public static Pieces[] getPieceNColor(final int piece) {
         final Pieces[] result = new Pieces[2];
         result[1] = getColor(piece);
-        result[0] = values()[(piece - result[1].value) >> 1];
+        result[0] = values()[piece >> 2];
         return result;
     }
 
     public static Pieces getColor(final int piece) {
-        final int lastToBits = piece & 1;
+        final int lastToBits = piece & 3;
         if (NONE.value == piece - lastToBits)
             return NONE;
         if (WHITE.value == lastToBits)

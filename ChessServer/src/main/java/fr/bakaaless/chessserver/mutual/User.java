@@ -103,7 +103,7 @@ public abstract class User {
             this.server.field[newPiece[0]][newPiece[1]] = this.server.field[this.selected[0]][this.selected[1]];
             this.server.field[this.selected[0]][this.selected[1]] = Pieces.NONE.value();
             this.server.previousMoves.add(new int[][] { this.selected, newPiece });
-            final boolean hasChess = this.server.hasChess(this.server.colorRound, this.server.field);
+            final boolean hasChess = this.server.verifyCheck(this.server.colorRound, this.server.field);
             if (hasChess) {
                 this.server.users.stream().filter(user -> user.color == this.server.colorRound).forEach(user -> user.canRook = new boolean[] { false, false });
                 this.server.sendAllPacket(new PacketOutChess());
